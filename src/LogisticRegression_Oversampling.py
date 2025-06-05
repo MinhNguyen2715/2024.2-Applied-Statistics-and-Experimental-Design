@@ -31,37 +31,14 @@ from scipy.stats import uniform, loguniform
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.over_sampling import SMOTE
 
-from google.colab import drive
-drive.mount('/mnt/drive')
 
 """# Import data"""
 
-# data = pd.read_excel('/mnt/drive/MyDrive/HUST/AS&ED/creditcard.xlsx')
-data = pd.read_csv('/mnt/drive/MyDrive/HUST/AS&ED/creditcard.csv')
+data = pd.read_csv("creditcard.csv")
 
 data.head(5)
 
-"""# Logistic regresion + lí thuyết về credit card fraud system
-0.172% of all transactions.
-
-# Method 1: Using undersampling
-
 ## Step 1: Split Data (Stratified)
-
-## Step 2: Apply Resampling (Undersampling)
-
-## Step 3: Feature Scaling (StandardScaler)
-
-## Step 4: Model Training with Class Weights
-
-## Step 5: Hyperparameter Tuning
-
-## Step 6: Evaluate on Test Set
-
-# Method 2: Using oversampling
-
-## Step 1: Split Data (Stratified)
-"""
 
 X = data.drop('Class', axis=1)
 y = data['Class']
@@ -76,7 +53,7 @@ print(Counter(y_test))
 
 """
 
-smote = SMOTE(random_state=42, sampling_strategy=0.2)
+smote = SMOTE(random_state=42, sampling_strategy=0.1)
 X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
 
 print(Counter(y_train_resampled))
@@ -93,73 +70,46 @@ print(X_train_scaled.shape)
 
 """## Step 4: Hyperparameter Tuning"""
 
-param_grid = [
-    {
-        'penalty': ['l1'],
-        'solver': ['liblinear', 'saga'],
-        'C': [0.0005, 0.001, 0.002],
-        'class_weight': [None, 'balanced']
-    },
-    {
-        'penalty': ['l2'],
-        'solver': ['liblinear', 'lbfgs', 'saga'],
-        'C': [0.0005, 0.001, 0.002],
-        'class_weight': [None, 'balanced']
-    },
-    {
-        'penalty': ['elasticnet'],
-        'solver': ['saga'],
-        'C': [0.0005, 0.001, 0.002],
-        'class_weight': [None, 'balanced'],
-        'l1_ratio': [0.1, 0.5, 0.9]
-    }
-]
+# param_grid = [
+#     {
+#         'penalty': ['l1'],
+#         'solver': ['liblinear', 'saga'],
+#         'C': [0.0005, 0.001, 0.002],
+#         'class_weight': [None, 'balanced']
+#     },
+#     {
+#         'penalty': ['l2'],
+#         'solver': ['liblinear', 'lbfgs', 'saga'],
+#         'C': [0.0005, 0.001, 0.002],
+#         'class_weight': [None, 'balanced']
+#     },
+#     {
+#         'penalty': ['elasticnet'],
+#         'solver': ['saga'],
+#         'C': [0.0005, 0.001, 0.002],
+#         'class_weight': [None, 'balanced'],
+#         'l1_ratio': [0.1, 0.5, 0.9]
+#     }
+# ]
 
 
-model = LogisticRegression(max_iter=1000, random_state=42)
-cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-scoring = 'average_precision'
+# model = LogisticRegression(max_iter=1000, random_state=42)
+# cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+# scoring = 'average_precision'
 
-grid_search = GridSearchCV(
-    model,
-    param_grid=param_grid,
-    scoring='average_precision',
-    cv=cv,
-    n_jobs=-1,
-    verbose=1
-)
-grid_search.fit(X_train_scaled, y_train_resampled)
-
-best_params = grid_search.best_params_
-print("Best Hyperparameters:", best_params)
-print("Best AUPRC score:", grid_search.best_score_)
-
-tmp_model = LogisticRegression()
-# param_dist = {
-#     'penalty': ['l1', 'l2', 'elasticnet'],
-#     'solver': ['liblinear', 'lbfgs', 'saga'],
-#     'C': loguniform(1e-4, 10),
-#     'class_weight': [None, 'balanced'],
-#     'l1_ratio': [0.1, 0.5, 0.9]  # only used when penalty='elasticnet'
-# }
-
-# random_search = RandomizedSearchCV(
-#     estimator=model,
-#     param_distributions=param_dist,
-#     n_iter=30,               # Number of combinations to try
-#     scoring=scoring,
-#     cv=5,
-#     random_state=42,
+# grid_search = GridSearchCV(
+#     model,
+#     param_grid=param_grid,
+#     scoring='average_precision',
+#     cv=cv,
 #     n_jobs=-1,
 #     verbose=1
 # )
+# grid_search.fit(X_train_scaled, y_train_resampled)
 
-# # Fit on your scaled/resampled training data
-# random_search.fit(X_train_scaled, y_train_resampled)
-
-# # Best results
-# print("Best Parameters:", random_search.best_params_)
-# print("Best AUPRC:", random_search.best_score_)
+# best_params = grid_search.best_params_
+# print("Best Hyperparameters:", best_params)
+# print("Best AUPRC score:", grid_search.best_score_)
 
 """## Step 5: Evaluate on Test Set"""
 
