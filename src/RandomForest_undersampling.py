@@ -21,7 +21,7 @@ from imblearn.over_sampling import SMOTE
 
 
 start1 = time.time()
-df = pd.read_csv("creditcard.csv")
+df = pd.read_csv('data/creditcard.csv.gz', compression='gzip')
 print(df.head())
 end1 = time.time()
 print("Read data time: ", round(end1 - start1, 2), "s")
